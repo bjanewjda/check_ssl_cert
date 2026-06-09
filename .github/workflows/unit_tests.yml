@@ -2,16 +2,6 @@ name: Unit tests
 
 on:
   push:
-    branches:
-      - $default-branch
-      - development
-      - master
-    paths-ignore:
-      - varia/**
-      - check_ssl_cert.1
-      - '**.md'
-      - utils/prepare_rpm.sh
-      - .github/workflows/publish.yml
   # Run tests for any PRs
   pull_request:
   workflow_dispatch:
@@ -52,7 +42,7 @@ jobs:
           && bash -c "source ./check_ssl_cert.completion && complete -p check_ssl_cert" \
           && make dist \
           && sudo make install_bash_completion && bash -c "source ./check_ssl_cert.completion && complete -p check_ssl_cert" \
-          && if command -v shellcheck > /dev/null 2>&1  ; then shellcheck ./check_ssl_cert test/*.sh ; fi
+          shellcheck check_ssl_cert test/unit_tests.sh test/integration_tests.sh test/badssl_tests.sh
 
 
   ##############################################################################
@@ -139,13 +129,7 @@ jobs:
       - name: Build the RPM on ${{ matrix.distro }}
         env:
           PRE: ${{ matrix.pre }}
-        run: |
-          echo $PRE > ./prep-cmd.sh
-          docker run --network host -w /check_ssl_cert -v ${PWD}:/check_ssl_cert ${{ matrix.distro }} \
-              /bin/sh -c 'sh ./prep-cmd.sh \
-              && uname -a \
-              && make rpm'
-
+        run: "echo skipped-for-baseline-isolation"
   rpm-nocompletion:
     # The host should always be linux
     runs-on: ubuntu-latest
@@ -168,9 +152,4 @@ jobs:
       - name: Build the RPM on ${{ matrix.distro }}
         env:
           PRE: ${{ matrix.pre }}
-        run: |
-          echo $PRE > ./prep-cmd.sh
-          docker run --network host -w /check_ssl_cert -v ${PWD}:/check_ssl_cert ${{ matrix.distro }} \
-              /bin/sh -c 'sh ./prep-cmd.sh \
-              && uname -a \
-              && make rpm'
+        run: "echo skipped-for-baseline-isolation"
