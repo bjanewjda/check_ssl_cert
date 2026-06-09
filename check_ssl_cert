@@ -249,7 +249,7 @@ check_unrequired_http_header() {
 
     debuglog "Checking unrequired header '${header}' with path '${path}'"
 
-    if "${GREP_BIN}" -q -i "^${header}:" "${CACHED_HEADERS}"; then
+    if ${GREP_BIN} -q -i "^${header}:" "${CACHED_HEADERS}"; then
         HEADER_VALUE=$("${GREP_BIN}" -i "^${header}:" "${CACHED_HEADERS}" | sed 's/[^:]*: //' | tr -d '\n' | tr -d '\r')
         debuglog "Unwanted header '${header}' found (${HEADER_VALUE})"
         prepend_critical_message "HTTP header '${header}' is supported (${HEADER_VALUE})"
